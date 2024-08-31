@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="static/styles.css">
+        <title>Title</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+        <script>
+            async function scrapeList(){
+                console.log("aslfdk;ja;kdslfhladsk;fjk")
+                listurl = document.getElementById("list_url_input").value
+                try{
+                    const response = await fetch('/scraping', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({listurl})
+                    });
+                } catch (error){
+                    console.error("Error in sendScrapeData:", error);
+                }
+            }
+        </script>
+        <div id="element">
+
+        </div>
+        <div class="main">
+            <div class="sidebar">
+                <input id="list_url_input" type ="text">
+                <button class="site-button" onclick="scrapeList()">scrape</button>
+            </div>
+            <div id="centerElement" class="center">
+
+                {% block content %}{% endblock %}
+
+                
+            </div>
+        </div>
+        
+    </body>
+</html>

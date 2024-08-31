@@ -1,0 +1,216 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <script>
+
+        var list = '{{list|tojson|safe}}'
+        var jsonList = JSON.parse(list);
+
+        originalList = jsonList.movies
+        currentList = jsonList.movies
+        
+        
+        document.addEventListener('DOMContentLoaded', function(){
+
+            //Insert list title
+            titleElement = document.getElementById("titleElement");
+            titleElement.innerHTML+=jsonList.title
+            //Get access to our html table
+            var htmlElement = document.getElementById("tableElement");
+            
+            for (let i=0; i<currentList.length;i++){
+                htmlElement.innerHTML+=getLinkHTML(currentList[i])
+            }
+
+            async function handleGenerateChangelog() {
+                console.log(currentList)
+                // Wait for requestGenerateChangelog() to finish
+                await requestGenerateChangelog();
+
+                // After it's done, redirect to /changelog
+                window.location.href = '/changelog';
+            }
+            //Add onclick for changelog button
+            document.getElementById('changelogbutton').onclick = handleGenerateChangelog
+    });
+    async function requestGenerateChangelog(){
+        console.log("AHHHHHHHHHHHHHHH")
+        console.log(originalList)
+        console.log(currentList)
+        console.log("Hello?")
+        try{
+            const response = await fetch('/generatelog', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({originalList,currentList})
+            });
+            const result = await response.json();
+            //changelog = result
+            //console.log("Changelog: "+changelog)
+            
+            
+        } catch (error){
+            console.error("Error in sendSortData:", error);
+        }
+    }
+    function getLinkHTML(movie){
+        console.log("Generate html")
+        console.log(movie)
+        return `<tr>
+            <td class="title">
+                ${movie.title}
+            </td>
+            <td class="watches">
+                ${movie.watches}
+            </td>
+            <td class="watches">
+                ${movie.releaseyear}
+            </td>
+            <td class="watches">
+                ${movie.runtime}
+            </td>
+            <td class="watches">
+                ${movie.genres}
+            </td>
+        </tr>`
+    }
+
+    function downloadCurrentList(){
+        csvstring =convertObjectToCSV(currentList)
+        downloadCSV(csvstring,"ListCSV");
+    }
+    function downloadCSV(csvString, filename) {
+            // Create a Blob with the CSV data
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+
+            // Create a URL for the Blob
+            const url = URL.createObjectURL(blob);
+
+            // Create an anchor element
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename; // Name of the file to be downloaded
+
+            // Append the anchor to the body (required for Firefox)
+            document.body.appendChild(a);
+
+            // Programmatically click the anchor to trigger the download
+            a.click();
+
+            // Remove the anchor from the document
+            document.body.removeChild(a);
+
+            // Release the object URL
+            URL.revokeObjectURL(url);
+        }
+
+        function convertObjectToCSV(objArray) {
+            const array = Array.isArray(objArray) ? objArray : [objArray];
+            
+            // Extract headers (keys of the first object)
+            const headers = Object.keys(array[0]);
+
+            // Create an array with CSV headers and rows
+            const csvRows = [];
+
+            // Add the header row
+            csvRows.push(headers.join(','));
+
+            // Add the data rows
+            array.forEach(obj => {
+                const row = headers.map(header => JSON.stringify(obj[header], replacer)).join(',');
+                csvRows.push(row);
+            });
+
+            // Join all rows with a newline character
+            return csvRows.join('\n');
+        }
+
+        // Function to handle commas and quotes inside CSV
+        function replacer(key, value) {
+            if (typeof value === 'string' && value.includes(',')) {
+                return `"${value}"`; // Wrap value in quotes if it contains a comma
+            }
+            return value;
+        }
+
+    async function sortList(){
+        try{
+            const response = await fetch('/sort?id='+getQueryParam("id"), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+            const result = await response.json();
+            sortedList= result
+            console.log("yeah sortu")
+            console.log(result);
+            currentList = result
+            var htmlElement = document.getElementById("tableElement");
+            console.log(htmlElement.rows.length)
+
+            
+            for (let i=0; i<currentList.length;i++){
+                htmlElement.deleteRow(1)
+            }
+
+            for (let i=0; i<result.length;i++){
+                htmlElement.innerHTML+=getLinkHTML(result[i])
+            }
+
+        } catch (error){
+            console.error("Error in sendSortData:", error);
+        }
+    }
+
+    function getQueryParam(param){
+        var urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    function showGraphPage(){
+
+        const urlParams = new URLSearchParams(window.location.search);
+        id = urlParams.get("id")
+        console.log(id)
+
+        window.location.href = '/graphs?id='+id;
+    }
+
+    </script>
+    <div id="titleElement" class="top-bar">
+        
+    </div>
+    <button class="site-button" onclick="sortList()">
+        Sort Descending (Watches)
+    </button>
+    <button class="site-button" onclick="downloadCurrentList()">Download List CSV</button>
+    <button class="site-button" id="changelogbutton" onclick="showChangelog()">
+        Changelog
+    </button>
+    <button onclick="showGraphPage()" class="site-button">Graphs</button>
+    <table  id="tableElement">
+        <tr>
+            <th class="title">
+                Title
+            </th>
+            <th class="watches">
+                Watches
+            </th>
+            <th class="watches">
+                releaseyear
+            </th>
+            <th class="watches">
+                runtime(min)
+            </th>
+            <th class="watches">
+                genres
+            </th>
+        </tr>
+        
+    </table>
+{% endblock %}

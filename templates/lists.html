@@ -1,0 +1,26 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function(){
+        
+        var lists = '{{lists|tojson|safe}}'
+        var jsonLists = JSON.parse(lists);
+
+        var htmlElement = document.getElementById("centerElement");
+
+        for (let i=0; i<jsonLists.length;i++){
+            htmlElement.innerHTML+=getLinkHTML(jsonLists[i]["title"],jsonLists[i]["movielistID"])
+        }
+
+    });
+    function getLinkHTML(text,id){
+        console.log(id)
+        console.log(text)
+        return `<button class="links" onclick="window.location.href='/list?id=${id}'">${text}</button>`
+    }
+</script>
+
+{% endblock %}

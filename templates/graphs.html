@@ -1,0 +1,32 @@
+{% extends "index.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+    <script>
+        var list = '{{listData|tojson|safe}}'
+        var jsonList = JSON.parse(list);
+
+        
+        console.log(jsonList)
+
+        graphs = []
+        
+        
+        document.addEventListener("DOMContentLoaded",function(){
+            //graph code here
+        });
+        
+    </script>
+    <div id="titleElement" class="top-bar">
+        
+    </div>
+    <div class="graph-container">
+        <div class="graphs">
+            <canvas id="chart"></canvas>
+        </div>
+    </div>
+    
+    
+{% endblock %}
