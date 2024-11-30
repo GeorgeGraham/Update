@@ -4,29 +4,50 @@
 
 {% block content %}
 
-    <script>
-        var list = '{{listData|tojson|safe}}'
-        var jsonList = JSON.parse(list);
+<script>
+    var list = '{{listData|tojson|safe}}'
+    var jsonList = JSON.parse(list);
 
-        
-        console.log(jsonList)
 
-        graphs = []
-        
-        
-        document.addEventListener("DOMContentLoaded",function(){
-            //graph code here
+    console.log(jsonList)
+
+    graphs = []
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        //graph code here
+        const ctx = document.getElementById('chart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true, // Chart scales to container size
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
         });
-        
-    </script>
-    <div id="titleElement" class="top-bar">
-        
+    });
+
+</script>
+<div id="titleElement" class="top-bar">
+
+</div>
+<div class="graph-container">
+    <div class="graphs">
+        <canvas class="chart" id="chart"></canvas>
     </div>
-    <div class="graph-container">
-        <div class="graphs">
-            <canvas id="chart"></canvas>
-        </div>
-    </div>
-    
-    
+</div>
+
+
 {% endblock %}

@@ -78,9 +78,11 @@
     }
 
     function downloadCSV(csvString, filename) {
+
+        console.log("Download CSV?")
         // Create a Blob with the CSV data
         const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-
+        
         // Create a URL for the Blob
         const url = URL.createObjectURL(blob);
 
@@ -106,6 +108,7 @@
         const array = Array.isArray(objArray) ? objArray : [objArray];
         
         // Define the headers you want
+        //This is good enough to identify , may need more if conflicts
         const headers = ['title', 'releaseyear'];
 
         // Create an array with CSV headers and rows
@@ -179,6 +182,12 @@
         window.location.href = '/graphs?id='+id;
     }
 
+    function downloadListCSV(){
+        let csvstring = convertObjectToCSV(currentList)
+        listName=document.getElementById("titleElement").innerText;
+        downloadCSV(csvstring,listName)
+    }
+
     </script>
     <div id="titleElement" class="top-bar">
         
@@ -186,7 +195,7 @@
     <button class="site-button" onclick="sortList()">
         Sort Descending (Watches)
     </button>
-    <button class="site-button" onclick="downloadCurrentList()">Download List CSV</button>
+    <button class="site-button" onclick="downloadListCSV()">Download List CSV</button>
     <button class="site-button" id="changelogbutton" onclick="showChangelog()">
         Changelog
     </button>

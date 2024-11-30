@@ -39,23 +39,25 @@ def index():
 
 @app.route('/scraping', methods=['POST'])
 def scrape():
-    print("asdfoiupqwieotujeqwklas;chfioauf;lkj")
+    #print("asdfoiupqwieotujeqwklas;chfioauf;lkj")
     listurl = request.json['listurl']
     #listurl = request.json['url']
     movies = scrape_list(listurl)
+    #print("upppppppppppppppppppppppppppppppppppppppppppppppppp")
+    print(movies)
     insert_list(movies)
     return "{}"
 
 def insert_list(movies):
-    print("Inserting List")
-    print(movies)
+    #print("Inserting List")
+    #print(movies)
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        print(movies["title"])
-        print(movies["url"])
+        #print(movies["title"])
+        #print(movies["url"])
         
-        print("Insert Movielist")
+        #print("Insert Movielist")
         # Insert list into the database and retrieve the generated movieListId
         cursor.execute("""
             INSERT INTO movielist (title, url)
@@ -66,7 +68,7 @@ def insert_list(movies):
             RETURNING "movielistID";
         """, (movies["title"], movies["url"]))
 
-        print("Insert Movie_Movielist")
+        #print("Insert Movie_Movielist")
         movie_list_id = cursor.fetchone()[0]
         cursor.execute("""
             DELETE FROM movie_movielist
@@ -78,7 +80,7 @@ def insert_list(movies):
 
         
         for movie in movies["movies"]:
-            print("mov")
+            #print("mov")
             cursor.execute("""
                 INSERT INTO movie (title, watches,releaseyear,runtime)
                 VALUES (%s, %s,%s,%s)
@@ -87,7 +89,7 @@ def insert_list(movies):
                 SET watches = EXCLUDED.watches
                 RETURNING "movieID";
             """, (movie["title"], movie["watches"],movie["releaseyear"],movie["runtime"],))
-            print("finmov")
+            #print("finmov")
             # Fetch the generated movieId
             movie_id = cursor.fetchone()[0]
             
@@ -135,7 +137,7 @@ def insert_list(movies):
         
     except Exception as e:
         conn.rollback()
-        print(f"An error occurred: {e}")
+        #print(f"An error occurred: {e}")
     finally:
         cursor.close()
         conn.close()
@@ -162,16 +164,16 @@ def sort():
 #Route for generating changelog
 @app.route('/generatelog',methods=['POST'])
 def generatelog():
-    print("Generating Log")
+    #print("Generating Log")
     data = request.get_json()  # Get the JSON data from the request body
 
     original_list = data.get('originalList')
     print(original_list)
     sorted_list = data.get('currentList')
-    print(sorted_list)
+    #print(sorted_list)
     differences = calculate_differences(original_list,sorted_list)
     changelogString = generate_changelog(original_list,differences)
-    print(differences)
+    #print(differences)
     #print("Changelog")
 
     session["changelog"] = changelogString
@@ -257,9 +259,9 @@ def getIndividualListData(listID):
 def get_db_connection():
     conn = psycopg2.connect(
         host='localhost',
-        database='postgres',
+        database='moviesultimate',
         user='postgres',
-        password='bossbaby'
+        password='pass'
     )
     return conn
 
@@ -271,8 +273,8 @@ def calculate_differences(original_list, sorted_list):
     #print("yahoo")
     #print(original_list)
     original_indices = {movie["movieID"]: i for i, movie in enumerate(original_list)}
-    print("original indices")
-    print(original_indices)
+    #print("original indices")
+    #print(original_indices)
     differences = []
     for new_index, movie in enumerate(sorted_list):
         movieID = movie["movieID"]
@@ -297,7 +299,7 @@ def generate_changelog(original_list, differences):
     for i in range(0, len(original_list)):
         if(differences[i]<0):
             result += original_list[i]["title"] + " " + str(differences[i]) + " \n"
-    print(result)
+    #print(result)
     return result
 
 

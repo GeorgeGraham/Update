@@ -118,7 +118,7 @@ body{
     box-sizing: border-box;
     height:90%;
     width:100%;
-    background-color: black;
+    background-color: red;
     /*display: grid;*/
     /*grid-template-columns: repeat(2, 50%); */
     /*grid-template-rows: repeat(2, 50%); */

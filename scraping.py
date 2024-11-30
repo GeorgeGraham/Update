@@ -4,15 +4,16 @@ import re
 import time
 
 def scrape_list(list_url):
+    print("Scraping List: " + list_url)
     x = 1
     listDictionary = {}
     listDictionary["movies"] = []
     listDictionary["url"] = list_url
     while True:
-        print("URL URL URL")
+        #print("URL URL URL")
         #print(f"{list_url}/page/{x}")
         r = requests.get(f"{list_url}page/{x}")
-        print(r.text)
+        #print(r.text)
         soup = BeautifulSoup(r.text, 'lxml')
         #print(soup.text)
         # change to title-1 prettify (remove has notes , optional i guess)
@@ -34,6 +35,8 @@ def scrape_list(list_url):
 
 
 def scrape_film(url):
+    print("")
+    print("Scraping Film: "+url)
     linkname = url.removeprefix('https://letterboxd.com/')
     linkname = 'https://letterboxd.com/csi/'+linkname+'stats/'
     #print(linkname)
@@ -71,6 +74,8 @@ def scrape_film(url):
     cleaned = runtimeSplit[0].strip()
     cleaned2 = cleaned.split('\xa0')[0]
     filmdictionary["runtime"] = cleaned2
+    print("Film Data: " + str(list(filmdictionary.values())))
+    print("")
     return filmdictionary
 
 #y = scrape_film("https://letterboxd.com/film/koji-shiraishis-never-send-me-please/")
